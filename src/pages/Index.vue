@@ -8,6 +8,22 @@
       <q-input filled v-model="search" label="Digite o Nome do Pokémon" />
       <q-btn color="purple" label="Pesquisar" @click="getPokemon" />
     </div>
+    <div class="row justify-between full-width absolute container-arrows">
+      <q-icon
+        name="far fa-arrow-alt-circle-left"
+        color="primary"
+        class="q-ml-sm cursor-pointer"
+        size="35px"
+        @click="getPokemon(id - 1)"
+      />
+      <q-icon
+        name="far fa-arrow-alt-circle-right"
+        color="primary"
+        class="q-mr-sm cursor-pointer"
+        size="35px"
+        @click="getPokemon(id + 1)"
+      />
+    </div>
   </q-page>
 </template>
 
@@ -21,6 +37,7 @@ export default {
     return {
       name: '',
       url: '',
+      id: null,
       search: 'charmander'
     }
   },
@@ -28,23 +45,17 @@ export default {
     await this.getPokemon()
   },
   methods: {
-    getPokemon() {
+    getPokemon(id) {
       api
-      .get(`/pokemon/${this.search.toLowerCase()}/`)
+      .get(id > 0 ? `/pokemon/${id}/` : `/pokemon/${this.search.toLowerCase()}/`)
       .then((res) => {
         this.name = res.data.name
+        this.id = res.data.id
+        this.search = this.name
         this.url = res.data.sprites.other.dream_world.front_default
-        this.triggerPositive()
       })
-      .catch ((err) => {
+      .catch (() => {
         this.triggerNegative()
-      })
-    },
-    triggerPositive() {
-      this.$q.notify({
-        type: "positive",
-        position: 'top',
-        message: `Pokémon encontrado.`
       })
     },
     triggerNegative() {
